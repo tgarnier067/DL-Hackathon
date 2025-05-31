@@ -143,15 +143,15 @@ def main():
     
         test_dir_name = os.path.basename(os.path.dirname(args.test_path)) # A, B, C, D
         script_dir = os.getcwd()
-        logs_folder = os.path.join(script_dir, "train-logs", test_dir_name)
+        logs_folder = os.path.join(script_dir, "logs", test_dir_name)
         os.makedirs(logs_folder, exist_ok=True)
         log_file = os.path.join(logs_folder, "training.log")
     
         logging.basicConfig(filename=log_file, level=logging.INFO, format='%(asctime)s - %(message)s')
         logging.getLogger().addHandler(logging.StreamHandler())
     
-        checkpoint_path = os.path.join(script_dir, "train-checkpoints", f"model_{test_dir_name}_best.pth")
-        checkpoints_folder = os.path.join(script_dir, "train-checkpoints", test_dir_name)
+        checkpoint_path = os.path.join(script_dir, "checkpoints", f"model_{test_dir_name}_best.pth")
+        checkpoints_folder = os.path.join(script_dir, "checkpoints", test_dir_name)
         os.makedirs(checkpoints_folder, exist_ok=True)
     
         # Modelization
@@ -208,8 +208,8 @@ def main():
                 torch.save(model.state_dict(), checkpoint_path)
                 print(f"Best model updated and saved at {checkpoint_path}")
     
-        plot_training_progress(train_losses, train_accuracies, os.path.join(logs_folder, "train-plots"))
-        plot_training_progress(val_losses, val_accuracies, os.path.join(logs_folder, "train-plotsVal"))
+        plot_training_progress(train_losses, train_accuracies, os.path.join(logs_folder, "plots"))
+        plot_training_progress(val_losses, val_accuracies, os.path.join(logs_folder, "plotsVal"))
 
 
         import gc
