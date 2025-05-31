@@ -1,7 +1,8 @@
 import os
 import torch
 import torch.nn.functional as F
-from torch.utils.data import DataLoader, random_split
+from torch.utils.data import random_split
+from torch_geometric.loader import DataLoader
 import argparse
 import logging
 import pandas as pd
@@ -135,7 +136,7 @@ def main():
     epochs = 200
     baseline_mode = 2
     num_epochs = 200
-    device = torch.device(f"cuda:1" if torch.cuda.is_available() else "cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
     if train_path:
         print(f"Training mode: training with {train_path} and testing with {test_path}")
@@ -232,14 +233,13 @@ def main():
         print(f"Inference mode: testing with {test_path} only")
         # Appelle ta fonction d'inférence ici
 
-        device = torch.device(f"cuda:1" if torch.cuda.is_available() else "cpu")
+        device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         model = GNN(gnn_type='gcn', num_class=6, num_layer=num_layer,
             emb_dim=emb_dim, drop_ratio=drop_ratio,
             virtual_node=True).to(device)
 
         test_dataset = GraphDataset(args.test_path, transform=add_zeros)
         test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
-
 
         test_dir_name = os.path.basename(os.path.dirname(args.test_path)) # A, B, C, D
         script_dir = os.getcwd()
