@@ -10,8 +10,8 @@ from tqdm import tqdm
 import gc
 
 # Assume GNN and GraphDataset are imported/defined elsewhere
-from source.model import GNN
-from source.dataset import GraphDataset
+from source.models import GNN
+from source.loadData import GraphDataset
 
 def add_zeros(data):
     data.x = torch.zeros(data.num_nodes, dtype=torch.long)
@@ -115,11 +115,6 @@ def plot_training_progress(train_losses, train_accuracies, output_dir):
 
 
 
-import argparse
-
-
-
-
 def main():
     parser = argparse.ArgumentParser(description="Train or test the GNN model.")
     parser.add_argument('--test_path', type=str, required=True, help='Path to the test.json.gz file')
@@ -130,20 +125,20 @@ def main():
     test_path = args.test_path
     train_path = args.train_path
 
+    # Parameters
+    num_checkpoints = 20
+    gnn = 'gcn-virtual'
+    drop_ratio = 0.5
+    num_layer = 5
+    emb_dim = 300
+    batch_size = 32
+    epochs = 200
+    baseline_mode = 2
+    num_epochs = 200
+    device = torch.device(f"cuda:1" if torch.cuda.is_available() else "cpu")
+
     if train_path:
         print(f"Training mode: training with {train_path} and testing with {test_path}")
-
-        # Parameters
-        num_checkpoints = 20
-        gnn = 'gcn-virtual'
-        drop_ratio = 0.5
-        num_layer = 5
-        emb_dim = 300
-        batch_size = 32
-        epochs = 200
-        baseline_mode = 2
-        num_epochs = 200
-        device = torch.device(f"cuda:{args.device}" if torch.cuda.is_available() else "cpu")
     
         test_dir_name = os.path.basename(os.path.dirname(args.test_path)) # A, B, C, D
         script_dir = os.getcwd()
@@ -159,7 +154,7 @@ def main():
         os.makedirs(checkpoints_folder, exist_ok=True)
     
         # Modelization
-        model = GNN(gnn_type='gcn', num_class=6, num_layer=args.num_layer, emb_dim=args.emb_dim, drop_ratio=args.drop_ratio, virtual_node=True).to(device)
+        model = GNN(gnn_type='gcn', num_class=6, num_layer=num_layer, emb_dim=emb_dim, drop_ratio=drop_ratio, virtual_node=True).to(device)
         optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
         criterion = WCELoss(gamma=0.2)
 
@@ -173,8 +168,8 @@ def main():
         generator = torch.Generator().manual_seed(12)
         train_dataset, val_dataset = random_split(full_dataset, [train_size, val_size], generator=generator)
     
-        train_loader = DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True)
-        val_loader = DataLoader(val_dataset, batch_size=args.batch_size, shuffle=False)
+        train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+        val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
     
             
         best_val_accuracy = 0.0
@@ -236,6 +231,15 @@ def main():
     else:
         print(f"Inference mode: testing with {test_path} only")
         # Appelle ta fonction d'inférence ici
+
+        device = torch.device(f"cuda:1" if torch.cuda.is_available() else "cpu")
+        model = GNN(gnn_type='gcn', num_class=6, num_layer=num_layer,
+            emb_dim=emb_dim, drop_ratio=drop_ratio,
+            virtual_node=True).to(device)
+
+        test_dataset = GraphDataset(args.test_path, transform=add_zeros)
+        test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False)
+
 
         test_dir_name = os.path.basename(os.path.dirname(args.test_path)) # A, B, C, D
         script_dir = os.getcwd()
