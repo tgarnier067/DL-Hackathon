@@ -18,8 +18,6 @@ The dataset can be downloaded [here](https://drive.google.com/drive/folders/1Z-1
 
 # Methods
 
-We also experimented with many other approaches (see `Many notebooks` folder), including:
-
 We employed a custom loss function called **Weighted Cross Entropy**, which builds upon the standard cross-entropy loss by weighting each sample’s loss according to the predicted probability of the true class. This weighting is controlled by a parameter gamma (set to 0.2), which modulates the influence of confident predictions, allowing the model to focus more on harder or uncertain examples during training. This approach helps improve robustness against noisy labels.We applied this loss function specifically on **Graph Neural Networks** (GNNs) to enhance their learning capacity in noisy label conditions.
 
 We also experimented with more advanced methods such as GCOD (see the reference part), which are designed to handle noisy labels more effectively. However, due to limited computational resources, **we were unable to train these models for a sufficient number of epochs to fully leverage their potential.**
@@ -68,8 +66,9 @@ More advanced techniques like GCOD have shown promising results and are expected
 
 # Reference
 
-- [wani et al. (2024)](https://arxiv.org/abs/2412.08419)
-- [Wani and al. (2023)](https://arxiv.org/abs/2303.09470)
+- [wani et al. (2024)](https://arxiv.org/abs/2412.08419) : Robustness of Graph Classification: failure modes, causes, and noise-resistant loss in Graph Neural Networks
+
+- [Wani and al. (2023)](https://arxiv.org/abs/2303.09470) : Learning with Noisy Labels through Learnable Weighting and Centroid Similarity
 
 ---
 
