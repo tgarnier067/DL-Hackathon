@@ -212,6 +212,7 @@ def main():
         plot_training_progress(val_losses, val_accuracies, os.path.join(logs_folder, "plotsVal"))
 
 
+        
         import gc
         del train_dataset
         del train_loader
